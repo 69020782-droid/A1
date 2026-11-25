@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>แอปพลิเคชันบริหารจัดการอาหารสุนัข</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --amber-bg: #c4832e;
+      --amber-deep: #b57624;
+      --brown-dark: #523214;
+      --brown-text: #3d240c;
+      --card-cream: #efece6;
+      --divider: #d6cfc3;
+      --nav-bg: #eceae4;
+      --green-bar: #5ca904;
+      --green-line: #3d8b2f;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: #e9e3d7;
+      color: var(--brown-text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .phone-frame {
+      width: 100%;
+      max-width: 390px;
+      height: 760px;
+      background: var(--amber-bg);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 24px 50px rgba(44, 28, 14, 0.22);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Header */
+    .app-header {
+      background: var(--brown-dark);
+      color: #f9f5ee;
+      height: 54px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      flex-shrink: 0;
+      font-family: 'Prompt', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .back-btn {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      color: #f9f5ee;
+      font-size: 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Screens */
+    .screen {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+      position: relative;
+      overflow-y: auto;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    .content-pad {
+      padding: 20px 18px 140px;
+      flex: 1;
+    }
+
+    /* Welcome Screen */
+    .welcome-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      position: relative;
+    }
+
+    .welcome-title {
+      font-family: 'Prompt', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--brown-text);
+      margin-bottom: 44px;
+    }
+
+    .btn-brown {
+      background: var(--brown-dark);
+      color: #fdfaf3;
+      border: none;
+      font-family: 'Prompt', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 12px 32px;
+      border-radius: 999px;
+      cursor: pointer;
+      min-height: 44px;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn-brown:active {
+      transform: scale(0.97);
+    }
+
+    .btn-brown-block {
+      width: 100%;
+      border-radius: 4px;
+      margin-top: 14px;
+    }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 22px;
+      padding: 0 12px;
+    }
+
+    /* Cream Cards */
+    .cream-card {
+      background: var(--card-cream);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .card-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--divider);
+      font-size: 16px;
+      min-height: 48px;
+    }
+
+    .card-row:last-child {
+      border-bottom: none;
+    }
+
+    .card-header-center {
+      text-align: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--divider);
+      font-family: 'Prompt', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .label-muted {
+      color: #5b4b3c;
+      font-weight: 500;
+    }
+
+    .value-text {
+      color: #2c1c0e;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .select-control, .input-control {
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 15px;
+      color: #2c1c0e;
+      text-align: right;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .time-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 10px 16px;
+      background: #e5e0d7;
+      border-bottom: 2px solid var(--green-line);
+    }
+
+    .time-input {
+      border: none;
+      background: transparent;
+      font-size: 16px;
+      font-weight: 600;
+      color: #2c1c0e;
+      width: 100%;
+      outline: none;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Radio Rows */
+    .radio-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 18px;
+      border-bottom: 1px solid var(--divider);
+      cursor: pointer;
+      min-height: 52px;
+    }
+
+    .radio-row:last-child {
+      border-bottom: none;
+    }
+
+    .radio-circle {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #746b61;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .radio-circle.selected {
+      border-color: var(--brown-dark);
+    }
+
+    .radio-circle.selected::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--brown-dark);
+    }
+
+    /* Hopper Simulation */
+    .hopper-stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .stat-box {
+      background: #f4f1eb;
+      color: #2c1c0e;
+      padding: 4px 12px;
+      min-width: 82px;
+      text-align: left;
+      font-variant-numeric: tabular-nums;
+      border-radius: 2px;
+    }
+
+    .hopper-tank-frame {
+      background: #141414;
+      width: 228px;
+      height: 112px;
+      margin: 14px auto 12px;
+      padding: 10px 10px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .hopper-percent {
+      color: #ffffff;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .hopper-track {
+      flex: 1;
+      margin-top: 8px;
+      background: #2b2b2b;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .hopper-fill {
+      width: 100%;
+      background: var(--green-bar);
+      transition: height 0.35s ease;
+    }
+
+    .chute-frame {
+      background: #141414;
+      width: 62px;
+      height: 146px;
+      margin: 0 auto;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .chute-track {
+      flex: 1;
+      margin-top: 6px;
+      background: #2b2b2b;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .chute-fill {
+      width: 100%;
+      height: 100%;
+      background: var(--green-bar);
+    }
+
+    /* Decorative Bottom Banner */
+    .bottom-dogs {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 8px;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      height: 64px;
+      background: var(--nav-bg);
+      border-top: 1px solid #d5cfc4;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .nav-item {
+      border: none;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      color: #6b635b;
+      font-family: 'Prompt', sans-serif;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .nav-item.active {
+      color: #d97706;
+      font-weight: 600;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(25, 16, 8, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 30;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #f9f6f0;
+      width: 100%;
+      border-radius: 12px;
+      padding: 18px;
+      max-height: 80%;
+      overflow-y: auto;
+    }
+
+    .toast {
+      position: absolute;
+      top: 66px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2c1c0e;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 40;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+    <div id="toast" class="toast">บันทึกข้อมูลเรียบร้อย</div>
+
+    <!-- ภาพ 5 (ก): หน้าแรก -->
+    <section id="screen-welcome" class="screen active">
+      <div class="welcome-body">
+        <svg width="100%" height="58" viewBox="0 0 360 58" style="position:absolute;top:0;left:0;" aria-hidden="true">
+          <path d="M0,0 L160,0 C120,38 55,44 0,55 Z" fill="#6b421c" opacity="0.85"/>
+          <circle cx="32" cy="18" r="7" fill="#4f2d11"/>
+          <circle cx="54" cy="14" r="6" fill="#7c4e24"/>
+          <circle cx="76" cy="22" r="7" fill="#523214"/>
+          <circle cx="102" cy="12" r="6" fill="#8b5a2b"/>
+        </svg>
+        <p class="welcome-title">ยินดีต้อนรับเข้าสู่แอปพลิเคชัน</p>
+        <button class="btn-brown" onclick="goToScreen('select')">เริ่ม</button>
+        <svg width="100%" height="84" viewBox="0 0 360 84" style="position:absolute;bottom:0;left:0;" aria-hidden="true">
+          <rect x="0" y="48" width="360" height="36" fill="#d4896a"/>
+          <circle cx="52" cy="36" r="18" fill="#ebd2b5"/>
+          <circle cx="115" cy="32" r="19" fill="#f7efe4"/>
+          <circle cx="180" cy="38" r="17" fill="#d9c6b0"/>
+          <circle cx="248" cy="30" r="20" fill="#f2dfc4"/>
+          <circle cx="312" cy="36" r="17" fill="#3a332d"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ภาพ 5 (ข): เลือกข้อมูลสุนัข -->
+    <section id="screen-select" class="screen">
+      <header class="app-header">
+        <button class="back-btn" onclick="goToScreen('welcome')" aria-label="ย้อนกลับ">&#8592;</button>
+        <span>เลือกข้อมูลสุนัข</span>
+      </header>
+      <div class="content-pad">
+        <div class="cream-card">
+          <div class="card-row">
+            <label for="select-breed" class="label-muted">สายพันธุ์</label>
+            <select id="select-breed" class="select-control" onchange="syncFoodEstimate('select')">
+              <option value="ตุ๊กตา">ตุ๊กตา</option>
+              <option value="เล็ก">เล็ก</option>
+              <option value="กลาง">กลาง</option>
+              <option value="ใหญ่">ใหญ่</option>
+            </select>
+          </div>
+          <div class="card-row">
+            <label for="select-weight" class="label-muted">น้ำหนัก (กก.)</label>
+            <select id="select-weight" class="select-control" onchange="syncFoodEstimate('select')">
+              <option value="2">2</option>
+              <option value="4" selected>4</option>
+              <option value="6">6</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="25">25</option>
+            </select>
+          </div>
+          <div class="card-row">
+            <span class="label-muted">อาหาร (กรัม/วัน)</span>
+            <input id="select-food" type="number" class="input-control" value="345" min="50" max="2000" />
+          </div>
+          <div class="card-row">
+            <span class="label-muted">กำหนดเวลาเริ่มต้น</span>
+          </div>
+          <div class="time-row">
+            <input id="select-hour" type="text" class="time-input" value="06" maxlength="2" aria-label="ชั่วโมง" />
+            <input id="select-minute" type="text" class="time-input" value="00" maxlength="2" aria-label="นาที" />
+          </div>
+        </div>
+        <button class="btn-brown btn-brown-block" onclick="saveSelectProfile()">บันทึก</button>
+      </div>
+    </section>
+
+    <!-- ภาพ 6 (ก): หน้าหลัก -->
+    <section id="screen-home" class="screen">
+      <header class="app-header"><span>หน้าหลัก</span></header>
+      <div class="content-pad">
+        <div class="cream-card">
+          <div class="card-row"><span class="label-muted">สายพันธุ์:</span><span id="home-breed" class="value-text">ตุ๊กตา</span></div>
+          <div class="card-row"><span class="label-muted">น้ำหนัก:</span><span id="home-weight" class="value-text">4กิโลกรัม</span></div>
+          <div class="card-row"><span class="label-muted">ปริมาณอาหาร:</span><span id="home-food" class="value-text">345กรัมต่อวัน</span></div>
+        </div>
+
+        <div class="cream-card">
+          <div class="card-header-center">จ่ายอาหารอัตโนมัติ</div>
+          <div class="card-row"><span class="label-muted">ครั้งที่ 1:</span><span id="home-meal1" class="value-text">06.00</span></div>
+          <div class="card-row"><span class="label-muted">ครั้งที่ 2:</span><span id="home-meal2" class="value-text">14.00</span></div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-brown" onclick="goToScreen('edit')">แก้ไขข้อมูล</button>
+          <button class="btn-brown" onclick="deleteProfile()">ลบข้อมูล</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ภาพ 6 (ข): แก้ไขข้อมูล -->
+    <section id="screen-edit" class="screen">
+      <header class="app-header">
+        <button class="back-btn" onclick="goToScreen('home')" aria-label="ย้อนกลับ">&#8592;</button>
+        <span>แก้ไขข้อมูล</span>
+      </header>
+      <div class="content-pad">
+        <div class="cream-card">
+          <div class="card-row">
+            <label for="edit-breed" class="label-muted">สายพันธุ์</label>
+            <select id="edit-breed" class="select-control" onchange="syncFoodEstimate('edit')">
+              <option value="ตุ๊กตา">ตุ๊กตา</option>
+              <option value="เล็ก">เล็ก</option>
+              <option value="กลาง">กลาง</option>
+              <option value="ใหญ่">ใหญ่</option>
+            </select>
+          </div>
+          <div class="card-row">
+            <label for="edit-weight" class="label-muted">น้ำหนัก</label>
+            <select id="edit-weight" class="select-control" onchange="syncFoodEstimate('edit')">
+              <option value="2">2</option>
+              <option value="4" selected>4</option>
+              <option value="6">6</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="25">25</option>
+            </select>
+          </div>
+          <div class="card-row">
+            <label for="edit-food" class="label-muted">อาหาร</label>
+            <input id="edit-food" type="number" class="input-control" value="345" />
+          </div>
+        </div>
+        <button class="btn-brown btn-brown-block" onclick="saveEditProfile()">บันทึก</button>
+      </div>
+    </section>
+
+    <!-- ภาพ 7 (ก): จ่ายอาหาร -->
+    <section id="screen-dispense" class="screen">
+      <header class="app-header"><span>จ่ายอาหาร</span></header>
+      <div class="content-pad">
+        <div class="cream-card">
+          <div class="radio-row" onclick="selectDispenseMode('manual')">
+            <span>กำหนดเอง</span>
+            <span id="radio-manual" class="radio-circle selected"></span>
+          </div>
+          <div class="radio-row" onclick="selectDispenseMode('auto')">
+            <span>อัตโนมัติ</span>
+            <span id="radio-auto" class="radio-circle"></span>
+          </div>
+        </div>
+
+        <div id="manual-panel" class="cream-card" style="padding:16px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+            <span class="label-muted">ปริมาณที่ต้องการจ่าย</span>
+            <span class="value-text"><span id="manual-grams-label">172</span> กรัม</span>
+          </div>
+          <input id="manual-slider" type="range" min="30" max="500" value="172" style="width:100%;accent-color:#523214;" oninput="document.getElementById('manual-grams-label').textContent=this.value" />
+          <button class="btn-brown btn-brown-block" onclick="dispenseNow()">สั่งจ่ายอาหารทันที</button>
+        </div>
+
+        <div id="auto-panel" class="cream-card" style="padding:16px;display:none;">
+          <p style="margin-bottom:8px;font-weight:600;">ตารางจ่ายอาหารอัตโนมัติ</p>
+          <p style="font-size:14px;color:#5b4b3c;">ระบบจะจ่ายอาหารตามเวลาที่ตั้งไว้ในหน้าหลัก (วันละ 2 มื้อ)</p>
+          <button class="btn-brown btn-brown-block" onclick="showToast('เปิดใช้งานโหมดอัตโนมัติแล้ว')">ยืนยันโหมดอัตโนมัติ</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ภาพ 7 (ข): ตรวจสอบอาหาร -->
+    <section id="screen-check" class="screen">
+      <header class="app-header"><span>ตรวจสอบอาหาร</span></header>
+      <div class="content-pad" style="text-align:center;">
+        <button class="btn-brown" style="margin-bottom:14px;padding:8px 28px;min-height:40px;" onclick="openHistory()">ประวัติ</button>
+
+        <div class="hopper-stat-row">
+          <span>ถังอาหารคงเหลือ</span>
+          <span id="hopper-remain" class="stat-box">6241</span>
+          <span>กรัม</span>
+        </div>
+        <div class="hopper-stat-row">
+          <span>ปริมาณอาหารคงเหลือ</span>
+          <span id="hopper-used" class="stat-box">1759</span>
+          <span>กรัม</span>
+        </div>
+
+        <div class="hopper-tank-frame">
+          <div id="hopper-pct-text" class="hopper-percent">78%</div>
+          <div class="hopper-track">
+            <div id="hopper-bar" class="hopper-fill" style="height:78%;"></div>
+          </div>
+        </div>
+
+        <div class="chute-frame">
+          <div class="hopper-percent">100%</div>
+          <div class="chute-track">
+            <div class="chute-fill"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- กล้อง -->
+    <section id="screen-camera" class="screen">
+      <header class="app-header"><span>กล้อง</span></header>
+      <div class="content-pad">
+        <div class="cream-card" style="padding:16px;text-align:center;">
+          <div style="background:#231b15;color:#f5ede1;border-radius:8px;height:210px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;">
+            <strong>มุมมองกล้องชามอาหาร (จุดที่ 1)</strong>
+            <span style="font-size:13px;color:#d6c8b6;">สถานะ: พร้อมตรวจสอบชามอาหาร</span>
+          </div>
+          <button class="btn-brown btn-brown-block" onclick="showToast('บันทึกภาพชามอาหารเรียบร้อย')">ถ่ายภาพตรวจสอบ</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Tab Bar -->
+    <nav id="bottom-nav" class="bottom-nav" style="display:none;">
+      <button class="nav-item active" data-tab="home" onclick="goToScreen('home')">หน้าหลัก</button>
+      <button class="nav-item" data-tab="dispense" onclick="goToScreen('dispense')">จ่ายอาหาร</button>
+      <button class="nav-item" data-tab="check" onclick="goToScreen('check')">ตรวจสอบอาหาร</button>
+      <button class="nav-item" data-tab="camera" onclick="goToScreen('camera')">กล้อง</button>
+    </nav>
+
+    <!-- History Modal -->
+    <div id="history-modal" class="modal-backdrop">
+      <div class="modal-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h3 style="font-family:'Prompt',sans-serif;font-size:17px;">ประวัติการจ่ายอาหาร</h3>
+          <button onclick="closeHistory()" style="border:none;background:transparent;font-size:20px;cursor:pointer;">&times;</button>
+        </div>
+        <div id="history-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CAPACITY = 8000;
+    const state = {
+      breed: 'ตุ๊กตา',
+      weight: 4,
+      food: 345,
+      meal1: '06.00',
+      meal2: '14.00',
+      remainGrams: 6241,
+      mode: 'manual',
+      logs: [
+        { time: 'วันนี้ 14:00 น.', mode: 'อัตโนมัติ', grams: 173 },
+        { time: 'วันนี้ 06:00 น.', mode: 'อัตโนมัติ', grams: 172 }
+      ]
+    };
+
+    const tabScreens = ['home', 'dispense', 'check', 'camera'];
+
+    function goToScreen(id) {
+      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+      document.getElementById('screen-' + id).classList.add('active');
+
+      const nav = document.getElementById('bottom-nav');
+      const showNav = ['home', 'edit', 'dispense', 'check', 'camera'].includes(id);
+      nav.style.display = showNav ? 'grid' : 'none';
+
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        const target = btn.getAttribute('data-tab');
+        const active = target === id || (id === 'edit' && target === 'home');
+        btn.classList.toggle('active', active);
+      });
+    }
+
+    function calcGrams(breed, weight) {
+      const map = { 'ตุ๊กตา': 86.25, 'เล็ก': 65, 'กลาง': 45, 'ใหญ่': 32 };
+      return Math.round(weight * (map[breed] || 50));
+    }
+
+    function syncFoodEstimate(prefix) {
+      const breed = document.getElementById(prefix + '-breed').value;
+      const weight = Number(document.getElementById(prefix + '-weight').value);
+      document.getElementById(prefix + '-food').value = calcGrams(breed, weight);
+    }
+
+    function saveSelectProfile() {
+      state.breed = document.getElementById('select-breed').value;
+      state.weight = Number(document.getElementById('select-weight').value);
+      state.food = Number(document.getElementById('select-food').value) || 345;
+      const h = parseInt(document.getElementById('select-hour').value, 10) || 6;
+      const m = parseInt(document.getElementById('select-minute').value, 10) || 0;
+      const pad = n => String(n).padStart(2, '0');
+      state.meal1 = pad(h % 24) + '.' + pad(m % 60);
+      state.meal2 = pad((h + 8) % 24) + '.' + pad(m % 60);
+      renderProfile();
+      goToScreen('home');
+      showToast('บันทึกข้อมูลสุนัขเรียบร้อย');
+    }
+
+    function saveEditProfile() {
+      state.breed = document.getElementById('edit-breed').value;
+      state.weight = Number(document.getElementById('edit-weight').value);
+      state.food = Number(document.getElementById('edit-food').value) || 345;
+      renderProfile();
+      goToScreen('home');
+      showToast('อัปเดตข้อมูลเรียบร้อย');
+    }
+
+    function deleteProfile() {
+      goToScreen('welcome');
+      showToast('ลบข้อมูลเรียบร้อย');
+    }
+
+    function renderProfile() {
+      document.getElementById('home-breed').textContent = state.breed;
+      document.getElementById('home-weight').textContent = state.weight + 'กิโลกรัม';
+      document.getElementById('home-food').textContent = state.food + 'กรัมต่อวัน';
+      document.getElementById('home-meal1').textContent = state.meal1;
+      document.getElementById('home-meal2').textContent = state.meal2;
+      document.getElementById('edit-breed').value = state.breed;
+      document.getElementById('edit-weight').value = String(state.weight);
+      document.getElementById('edit-food').value = state.food;
+    }
+
+    function selectDispenseMode(mode) {
+      state.mode = mode;
+      document.getElementById('radio-manual').classList.toggle('selected', mode === 'manual');
+      document.getElementById('radio-auto').classList.toggle('selected', mode === 'auto');
+      document.getElementById('manual-panel').style.display = mode === 'manual' ? 'block' : 'none';
+      document.getElementById('auto-panel').style.display = mode === 'auto' ? 'block' : 'none';
+    }
+
+    function dispenseNow() {
+      const grams = Number(document.getElementById('manual-slider').value);
+      state.remainGrams = Math.max(0, state.remainGrams - grams);
+      const pct = Math.round((state.remainGrams / CAPACITY) * 100);
+      document.getElementById('hopper-remain').textContent = state.remainGrams;
+      document.getElementById('hopper-used').textContent = CAPACITY - state.remainGrams;
+      document.getElementById('hopper-pct-text').textContent = pct + '%';
+      document.getElementById('hopper-bar').style.height = pct + '%';
+      state.logs.unshift({ time: 'เมื่อสักครู่', mode: 'กำหนดเอง', grams });
+      showToast('จ่ายอาหาร ' + grams + ' กรัม เรียบร้อย');
+    }
+
+    function openHistory() {
+      const list = document.getElementById('history-list');
+      list.innerHTML = state.logs.map(item =>
+        '<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e2ddd3;font-size:14px;">' +
+        '<div><strong>' + item.mode + '</strong><div style="color:#6d5c4c;font-size:12px;">' + item.time + '</div></div>' +
+        '<strong>' + item.grams + ' กรัม</strong></div>'
+      ).join('');
+      document.getElementById('history-modal').classList.add('open');
+    }
+
+    function closeHistory() {
+      document.getElementById('history-modal').classList.remove('open');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    }
+  </script>
+</body>
+</html>
